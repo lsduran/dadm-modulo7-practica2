@@ -14,6 +14,15 @@
 		A46CBEB42AD73E76005563DA /* Posts.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = A46CBEB22AD73E76005563DA /* Posts.xcdatamodeld */; };
 		A46CBEB62AD73E77005563DA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A46CBEB52AD73E77005563DA /* Assets.xcassets */; };
 		A46CBEB92AD73E77005563DA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A46CBEB72AD73E77005563DA /* LaunchScreen.storyboard */; };
+		B7D8915A2AD7A9A7000C30D0 /* Post.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7D891592AD7A9A7000C30D0 /* Post.swift */; };
+		B7D8915D2AD7ABBA000C30D0 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7D8915C2AD7ABBA000C30D0 /* Constants.swift */; };
+		B7D891602AD7AECB000C30D0 /* PostService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7D8915F2AD7AECB000C30D0 /* PostService.swift */; };
+		B7D891652AD8540E000C30D0 /* CGColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7D891622AD8540E000C30D0 /* CGColorExtension.swift */; };
+		B7D891662AD8540E000C30D0 /* AddPostViewControllerExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7D891632AD8540E000C30D0 /* AddPostViewControllerExtension.swift */; };
+		B7D891672AD8540E000C30D0 /* HidingKeyboardExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7D891642AD8540E000C30D0 /* HidingKeyboardExtension.swift */; };
+		B7D8916B2AD8548B000C30D0 /* AddPostViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7D891692AD8548B000C30D0 /* AddPostViewController.swift */; };
+		B7D8916C2AD8548B000C30D0 /* PostsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7D8916A2AD8548B000C30D0 /* PostsTableViewController.swift */; };
+		B7D8916F2AD8580F000C30D0 /* PostCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7D8916E2AD8580F000C30D0 /* PostCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +35,15 @@
 		A46CBEB52AD73E77005563DA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A46CBEB82AD73E77005563DA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		A46CBEBA2AD73E77005563DA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B7D891592AD7A9A7000C30D0 /* Post.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Post.swift; sourceTree = "<group>"; };
+		B7D8915C2AD7ABBA000C30D0 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		B7D8915F2AD7AECB000C30D0 /* PostService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostService.swift; sourceTree = "<group>"; };
+		B7D891622AD8540E000C30D0 /* CGColorExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CGColorExtension.swift; sourceTree = "<group>"; };
+		B7D891632AD8540E000C30D0 /* AddPostViewControllerExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddPostViewControllerExtension.swift; sourceTree = "<group>"; };
+		B7D891642AD8540E000C30D0 /* HidingKeyboardExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HidingKeyboardExtension.swift; sourceTree = "<group>"; };
+		B7D891692AD8548B000C30D0 /* AddPostViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddPostViewController.swift; sourceTree = "<group>"; };
+		B7D8916A2AD8548B000C30D0 /* PostsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PostsTableViewController.swift; sourceTree = "<group>"; };
+		B7D8916E2AD8580F000C30D0 /* PostCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +76,12 @@
 		A46CBEA82AD73E76005563DA /* Posts */ = {
 			isa = PBXGroup;
 			children = (
+				B7D891612AD8533A000C30D0 /* Extensions */,
+				B7D8915E2AD7AD75000C30D0 /* Services */,
+				B7D8915B2AD7ABA0000C30D0 /* Globals */,
+				B7D891582AD7A995000C30D0 /* Models */,
+				B7D891682AD8544D000C30D0 /* ViewControllers */,
+				B7D8916D2AD857C1000C30D0 /* Views */,
 				A46CBEA92AD73E76005563DA /* AppDelegate.swift */,
 				A46CBEAB2AD73E76005563DA /* SceneDelegate.swift */,
 				A46CBEAD2AD73E76005563DA /* ViewController.swift */,
@@ -68,6 +92,57 @@
 				A46CBEB22AD73E76005563DA /* Posts.xcdatamodeld */,
 			);
 			path = Posts;
+			sourceTree = "<group>";
+		};
+		B7D891582AD7A995000C30D0 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				B7D891592AD7A9A7000C30D0 /* Post.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		B7D8915B2AD7ABA0000C30D0 /* Globals */ = {
+			isa = PBXGroup;
+			children = (
+				B7D8915C2AD7ABBA000C30D0 /* Constants.swift */,
+			);
+			path = Globals;
+			sourceTree = "<group>";
+		};
+		B7D8915E2AD7AD75000C30D0 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				B7D8915F2AD7AECB000C30D0 /* PostService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		B7D891612AD8533A000C30D0 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				B7D891632AD8540E000C30D0 /* AddPostViewControllerExtension.swift */,
+				B7D891622AD8540E000C30D0 /* CGColorExtension.swift */,
+				B7D891642AD8540E000C30D0 /* HidingKeyboardExtension.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		B7D891682AD8544D000C30D0 /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				B7D891692AD8548B000C30D0 /* AddPostViewController.swift */,
+				B7D8916A2AD8548B000C30D0 /* PostsTableViewController.swift */,
+			);
+			path = ViewControllers;
+			sourceTree = "<group>";
+		};
+		B7D8916D2AD857C1000C30D0 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				B7D8916E2AD8580F000C30D0 /* PostCell.swift */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -141,10 +216,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B7D8916B2AD8548B000C30D0 /* AddPostViewController.swift in Sources */,
 				A46CBEAE2AD73E76005563DA /* ViewController.swift in Sources */,
+				B7D8916F2AD8580F000C30D0 /* PostCell.swift in Sources */,
 				A46CBEAA2AD73E76005563DA /* AppDelegate.swift in Sources */,
+				B7D891662AD8540E000C30D0 /* AddPostViewControllerExtension.swift in Sources */,
+				B7D891602AD7AECB000C30D0 /* PostService.swift in Sources */,
+				B7D8916C2AD8548B000C30D0 /* PostsTableViewController.swift in Sources */,
 				A46CBEAC2AD73E76005563DA /* SceneDelegate.swift in Sources */,
+				B7D891672AD8540E000C30D0 /* HidingKeyboardExtension.swift in Sources */,
 				A46CBEB42AD73E76005563DA /* Posts.xcdatamodeld in Sources */,
+				B7D8915A2AD7A9A7000C30D0 /* Post.swift in Sources */,
+				B7D8915D2AD7ABBA000C30D0 /* Constants.swift in Sources */,
+				B7D891652AD8540E000C30D0 /* CGColorExtension.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
