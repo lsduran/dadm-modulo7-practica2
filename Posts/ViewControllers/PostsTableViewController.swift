@@ -6,99 +6,83 @@
 //
 
 import UIKit
+import CoreData
 
 class PostsTableViewController: UITableViewController {
     
-    @IBOutlet var emptyNoteView: UIView!
+    @IBOutlet var lblEmptyPosts: UILabel!
     
-    let postService = NoteManager()
+    @IBOutlet var btnAddPost: UIBarButtonItem!
     
-    var note: Note?
-
+    @IBOutlet var btnRefreshPosts: UIBarButtonItem!
+    
+    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+    
+    var deleteRequest: NSBatchDeleteRequest?
+    
+    var postDataManager: PostDataManager?
+    
+    var postService: PostService?
+    
+    var post: PostEntity?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        noteManager.loadNotes()
-        
+        postService = PostService()
+        postDataManager = PostDataManager(context: context)
+        postDataManager?.fetch()
         updateEmptyView()
     }
 
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
         return 1
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return noteManager.countNotes()
+        return postDataManager?.countPosts() ?? 0
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "noteCell", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "postCell", for: indexPath) as! PostCell
         
-        let note = noteManager.getNote(at: indexPath.row)
+        let post = postDataManager?.getPost(at: indexPath.row)
         
-        cell.textLabel?.text = note.title
+        cell.lblTitle.text = "\(indexPath.row) - \(post!.title ?? "NO DATA")"
         
-        cell.detailTextLabel?.text = note.date.iso8601String
+        cell.lblBody.text = post?.body
         
         return cell
     }
-
-    /*
-    // Override to support conditional editing of the table view.
-    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the specified item to be editable.
-        return true
-    }
-    */
-
-    // Override to support editing the table view.
+    
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             // Delete the row from the data source
-            noteManager.deleteNote(at: indexPath.row)
+            postDataManager?.deletePost(at: indexPath.row)
+            postService?.deletePost(id: 100) { statusCode in
+                print("Post deleted. Statud code: ", statusCode)
+            }
             tableView.deleteRows(at: [indexPath], with: .fade)
-            noteManager.saveNotes()
             
             updateEmptyView()
             
         } else if editingStyle == .insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-        }    
+            
+        }
     }
 
-    /*
-    // Override to support rearranging the table view.
-    override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
-
-    }
-    */
-
-    /*
-    // Override to support conditional rearranging of the table view.
-    override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the item to be re-orderable.
-        return true
-    }
-    */
-    
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         //perform segue when user touches a cell
-        performSegue(withIdentifier: "showNoteSegue", sender: self)
+        performSegue(withIdentifier: "showPostSegue", sender: self)
     }
 
     // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-        if segue.identifier == "showNoteSegue" {
+        if segue.identifier == "showPostSegue" {
             let destination = segue.destination as! AddPostViewController
-            destination.note = noteManager.getNote(at: self.tableView.indexPathForSelectedRow!.row)
-            destination.newNoteFlag = false
+            destination.post = postDataManager?.getPost(at: self.tableView.indexPathForSelectedRow!.row)
         }
     }
     
@@ -107,36 +91,78 @@ class PostsTableViewController: UITableViewController {
         
         let source = segue.source as! AddPostViewController
         
-        note = source.note
+        post = source.post
         
-        if source.newNoteFlag {
-            noteManager.createNote(note: note!)
+        let postModel: PostModel = PostModel(userId: Int(post!.userId), title: (post?.title)!, body: (post?.body)!)
+        
+        if source.newPostFlag {
+            postService?.createPost(post: postModel){ postCreated in
+                print("Post created: ", postCreated as Any)
+            }
         } else {
-            noteManager.updateNote(note: note!, at: self.tableView.indexPathForSelectedRow!.row)
+            postService?.updatePost(post: postModel) { postUpdated in
+                print("Post updated: ", postUpdated as Any)
+            }
         }
         
-        print("# notas: ", noteManager.countNotes())
+        postDataManager?.save()
         
-        // print("notas: ", noteManager.getNotes())
+        postDataManager?.fetch()
         
-        noteManager.saveNotes()
-        
-        self.tableView.reloadData()
-        
-        updateEmptyView()
+        reloadUI()
         
     }
     
+    @IBAction func loadRemotePosts(_ sender: UIBarButtonItem) {
+        
+        postService?.getPosts {
+            for post in self.postService!.posts {
+                let postEntity = PostEntity(context: self.context)
+                postEntity.body = post.body
+                postEntity.title = post.title
+                postEntity.userId = Int16(post.userId)
+            }
+            self.postDataManager?.save()
+            
+            self.postDataManager?.fetch()
+            
+            self.reloadUI()
+        }
+    }
+    
+    @IBAction func deleteAllData(_ sender: UIBarButtonItem) {
+        let alert = UIAlertController(title: "Delete", message: "Are you sure that you want to delete all the posts?", preferredStyle: UIAlertController.Style.alert)
+        alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertAction.Style.default, handler: nil))
+        alert.addAction(UIAlertAction(title: "Accept", style: UIAlertAction.Style.destructive) { _ in
+            do {
+                self.deleteRequest = NSBatchDeleteRequest(fetchRequest: PostEntity.fetchRequest())
+                try self.context.persistentStoreCoordinator!.execute(self.deleteRequest!, with: self.context)
+                self.postDataManager?.fetch()
+                self.reloadUI()
+            } catch let error {
+                print("ERROR: deleteAllData - ", error)
+            }
+        })
+        self.present(alert, animated: true, completion: nil)
+    }
+    
+    func reloadUI() {
+        DispatchQueue.main.async {
+            self.tableView.reloadData()
+            self.updateEmptyView()
+        }
+    }
+    
     func updateEmptyView() {
-        if noteManager.countNotes() == 0 {
+        if postDataManager?.countPosts() == 0 {
             
-            emptyNoteView.isHidden = false
+            lblEmptyPosts.isHidden = false
             
-            self.tableView.backgroundView = emptyNoteView
+            self.tableView.backgroundView = lblEmptyPosts
             
         } else {
             
-            emptyNoteView.isHidden = true
+            lblEmptyPosts.isHidden = true
             
         }
     }

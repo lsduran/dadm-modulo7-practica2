@@ -11,11 +11,13 @@ class PostService {
     
     static let shared = PostService()
     
+    var posts : [PostModel] = []
+    
     init () {}
     
     // Create
-    func createPost(post : Post, completion: @escaping (Post?) -> Void) {
-        guard let url = URL(string: Constants.POSTS_ENDPOINT) else {
+    func createPost(post : PostModel, completion: @escaping (PostModel?) -> Void) {
+        guard let url = URL(string: Constants.POSTS_URL) else {
             completion(nil)
             return
         }
@@ -33,7 +35,7 @@ class PostService {
             let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
                 if let data = data {
                     //Handle response data
-                    if let createdPost = try? JSONDecoder().decode(Post.self, from: data) {
+                    if let createdPost = try? JSONDecoder().decode(PostModel.self, from: data) {
                         completion(createdPost)
                     }
                 } else if let error = error {
@@ -48,9 +50,61 @@ class PostService {
         }
     }
     
+    //Read
+    
+    func getPosts(completion: @escaping () -> Void) {
+        let url = URL(string: Constants.POSTS_URL)!
+        let session = URLSession.shared
+        var httpResponse = HTTPURLResponse()
+        var loadedPosts : [PostModel] = []
+        
+        let task = session.dataTask(with: url) { (data, response, error) in
+            if let error = error {
+                print("Error: \(error)")
+                return
+            }
+            
+            // Check response
+            guard let httpResponse = response as? HTTPURLResponse,
+                  httpResponse.statusCode == 200 else {
+                print("Invalid response")
+                httpResponse = (response as? HTTPURLResponse)!
+                print("statusCode: ", httpResponse.statusCode)
+                return
+            }
+            
+            // Check if there is any data
+            guard let data = data else {
+                print("No data received")
+                return
+            }
+            
+            // Parse and use the data
+            do {
+                let decodedResponse = try JSONDecoder().decode([PostModel].self, from: data)
+                
+                // print("response: ", decodedResponse )
+                
+                loadedPosts = decodedResponse
+                
+                for post in loadedPosts {
+                    self.posts.append(post)
+                }
+                
+            } catch let error{
+                loadedPosts = []
+                print("JSON parsing error: \(error)")
+            }
+            completion()
+        }
+        
+        // Start the task
+        task.resume()
+    }
+    
     //Update method
-    func updatePost(post : Post, completion: @escaping (Post?) -> Void) {
-        let urlString = Constants.POSTS_ENDPOINT + String(post.id!)
+    func updatePost(post : PostModel, completion: @escaping (PostModel?) -> Void) {
+        let urlString = Constants.POSTS_URL + String(1)
         print("urlString:", urlString)
         guard let url = URL(string: urlString) else {
             completion(nil)
@@ -70,7 +124,7 @@ class PostService {
             let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
                 if let data = data {
                     //Handle response data
-                    if let updatedPost = try? JSONDecoder().decode(Post.self, from: data) {
+                    if let updatedPost = try? JSONDecoder().decode(PostModel.self, from: data) {
                         completion(updatedPost)
                     }
                 } else if let error = error {
@@ -87,7 +141,7 @@ class PostService {
     
     //Delete
     func deletePost(id: Int, completion: @escaping (Int) -> Void) {
-        let urlString = Constants.POSTS_ENDPOINT + String(id)
+        let urlString = Constants.POSTS_URL + String(id)
         print("urlString:", urlString)
         
         guard let url = URL(string: urlString) else {

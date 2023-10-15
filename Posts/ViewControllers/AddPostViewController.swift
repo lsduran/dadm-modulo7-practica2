@@ -9,48 +9,42 @@ import UIKit
 
 class AddPostViewController: UIViewController {
 
-    @IBOutlet weak var noteTitle: UITextView!
+    @IBOutlet weak var postTitle: UITextView!
     
-    @IBOutlet weak var noteContent: UITextView!
+    @IBOutlet weak var postBody: UITextView!
     
-    @IBOutlet weak var sldFontSizeCtrl: UISlider!
+    var post: PostEntity?
     
-    @IBOutlet weak var clrFontColorCtrl: UIColorWell!
+    var newPostFlag: Bool = true 
     
-    var post: Post?
-    
-    var newNoteFlag: Bool = true
-    
-    var fontSize = 17.0
-    
-    var fontColorRGBA = Constants.defaultColor
-    
+    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+        
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        noteTitle.delegate = self
-        noteContent.delegate = self
+        postTitle.delegate = self
+        postBody.delegate = self
 
-        if newNoteFlag {
-            post = Note(title: "", content: "", date: Date(), fontSize: 17.0, fontColor: AppConstants.defaultColor)
+        if post != nil {
+            postTitle.text = post?.title
+            postBody.text = post?.body
+            newPostFlag = false
+        } else {
+            post = PostEntity(context: context)
+            post?.title = ""
+            post?.body = ""
+            post?.userId = 1
+            newPostFlag = true
         }
-        
-        sldFontSizeCtrl.value = post!.fontSize
-        clrFontColorCtrl.selectedColor = UIColor(red: note!.fontColor[0], green: note!.fontColor[1], blue: post!.fontColor[2], alpha: post!.fontColor[3])
-        
-        noteTitle.text = post?.title
-        noteContent.text = post?.content
-        noteContent.font = UIFont.systemFont(ofSize: CGFloat(sldFontSizeCtrl.value))
-        noteContent.textColor = clrFontColorCtrl.selectedColor
-        
-        clrFontColorCtrl.addTarget(self, action: #selector(fontColorChanged), for: .valueChanged)
-        
-        
-        
     }
     
     @IBAction func cancelButtonPressed(_ sender: UIBarButtonItem) {
+        
+        // Esta línea de código es necesaria para que la entidad vacía que se crea al abrir AddPostViewController se descarte y no se almacene al guardar el contexto
+        post?.managedObjectContext?.refresh(post!, mergeChanges: false)
+        
         let isModal = self.presentingViewController is UINavigationController
+        print("isModal: ",isModal)
         if isModal {
             self.dismiss(animated: true)
         }
@@ -61,52 +55,35 @@ class AddPostViewController: UIViewController {
     
     
     // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-        
-        post = Note(title: noteTitle.text, content: noteContent.text, date: Date(), fontSize: sldFontSizeCtrl.value, fontColor: clrFontColorCtrl.selectedColor!.cgColor.components!)
-        
-        // HOMEWORK: Add validation
+        post?.userId = 1
+        post?.title = postTitle.text
+        post?.body = postBody.text
         
         let destination = segue.destination as! PostsTableViewController
         
-        destination.note = post
+        destination.post = post
         
     }
     
     override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
-        if !validateNote() {
-            print("Invalid note")
+        if !validatePost() {
+            print("Invalid post")
             return false
         }
         return true
     }
     
-    private func validateNote() -> Bool {
-        if noteTitle.text.isEmpty {
-            noteTitle.borderColor = .red
+    private func validatePost() -> Bool {
+        if postTitle.text.isEmpty {
+            postTitle.borderColor = .red
         }
         
-        if noteContent.text.isEmpty {
-            noteContent.borderColor = .red
+        if postBody.text.isEmpty {
+            postBody.borderColor = .red
         }
         
-        return !noteTitle.text.isEmpty && !noteContent.text.isEmpty
-    }
-    
-    
-    @IBAction func fontSizeChanged(_ sender: UISlider) {
-        fontSize = CGFloat(sender.value.rounded())
-        noteContent.font = UIFont.systemFont(ofSize: fontSize)
-    }
-    
-    @objc func fontColorChanged() {
-        fontColorRGBA = (clrFontColorCtrl.selectedColor?.cgColor.components!)!
-        noteContent.textColor = clrFontColorCtrl.selectedColor
-        // saveConfig(key: "fontColor", value: clrFontColorCtrl.selectedColor?.cgColor.components! ?? AppConstants.defaultColor)
+        return !postTitle.text.isEmpty && !postBody.text.isEmpty
     }
 
 }
